@@ -1,0 +1,16 @@
+{
+  "name": "community-compass",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npx lite-server --baseDir .",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "jsdom": "^23.0.0",
+    "lite-server": "^2.6.1",
+    "vitest": "^1.5.0"
+  }
+}
