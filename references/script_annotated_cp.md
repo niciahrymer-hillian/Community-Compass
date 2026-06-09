@@ -6,28 +6,39 @@ It is intentionally kept small and focused on UI behavior, accessibility, and lo
 
 ## Sections
 
-### 1. Constants and state keys
-- `noteStorageKey`: localStorage key for notes
-- `isBrowser`: feature detection for safe module import in tests
+### 1. Constants
+- `noteStorageKey`: localStorage key for persisted assistant notes.
 
-### 2. UI helper functions
-- `setFontSize(delta)`: adjusts the `html` root font size within a safe range.
-- `calculateRiskPercentage(score)`: converts the youth risk score into a visual percentage.
-- `toggleHighContrast()`: toggles high-contrast theme mode on the root element.
-- `filterListings(filter)`: hides or shows listing cards based on a selected category.
-- `selectListingDetails(title, score)`: populates the detail card with the selected listing data.
-- `saveNotes()`: persists the note textarea content to localStorage.
-- `loadNotes()`: loads saved note content from localStorage.
+### 2. Exported testable helpers
+These are exported so Vitest can import and unit-test them without rendering the full page.
+They look up DOM nodes **at call time** (not at import time) so the module stays import-safe in
+Node and operates against whatever `document` the test has set up.
+- `setFontSize(delta)`: adjusts the `html` root font size, clamped to a 14–22px range. Reads the
+  current size via `window.getComputedStyle` (the test stubs `global.window`, so bare
+  `getComputedStyle` is not available — using the `window.` form works in both browser and JSDOM).
+- `calculateRiskPercentage(score)`: pure function converting the youth risk score (0–18) into a
+  10–100 visual percentage. Extracted from the old inline `updateRiskScore()` math so it can be
+  tested directly.
+- `saveNotes()`: persists the `#noteText` textarea content to localStorage.
+- `loadNotes()`: restores saved note content from localStorage into `#noteText`.
 
-### 3. Application bootstrap
-- `initializeApp()`: finds the DOM elements, attaches event listeners, and restores persisted state.
-- The module uses `DOMContentLoaded` to run only in a real browser context.
+### 3. Browser wiring — `init()`
+- All DOM element lookups and `addEventListener` wiring live inside `init()` so that importing the
+  module in Node (for tests) does **not** execute browser-only code.
+- Contains the font/contrast controls, panel tabs, listing filter pills, listing detail/tour/email/
+  save actions, the resource tabs, and a local `updateRiskScore()` that delegates the math to the
+  exported `calculateRiskPercentage()` (single source of truth).
+- The `saveNote` button calls the exported `saveNotes()` then shows a confirmation alert.
 
-### 4. Testing strategy
-- This file exports core helpers so they can be unit tested without rendering the full page.
-- The tests focus on small pure functions and local state persistence.
+### 4. Bootstrap guard
+- `if (typeof document !== 'undefined' && document.getElementById('decrease-font')) init();`
+- In the browser the dashboard markup is present, so `init()` runs. Under a bare Node import the
+  guard is false, so no wiring executes and the exported helpers can be tested in isolation.
+- `index.html` loads this file as `<script type="module">` because the file now uses ES `export`
+  statements, which a classic `<script>` cannot parse.
 
 ### Why this structure
-- Separating helpers from bootstrapping makes the code easier to test and evolve.
-- The module remains compatible with both browser execution and Node/JSDOM unit tests.
-- The persisted notes feature mirrors the assistant-side persistent panel concept from the referenced repos.
+- Separating exported helpers from `init()` bootstrapping makes the code testable without a full DOM.
+- The module stays compatible with both browser execution and Node/JSDOM unit tests.
+- The persisted notes feature mirrors the assistant-side persistent panel concept from the
+  referenced repos (HomeMatch/kindConnect).
