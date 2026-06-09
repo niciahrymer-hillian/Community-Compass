@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Community Compass</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand">
+      <span class="brand-mark">CC</span>
+      <div>
+        <strong>Community Compass</strong>
+        <small>Resource dashboard for housing, youth support, and community services</small>
+      </div>
+    </div>
+    <div class="accessibility-controls" aria-label="Accessibility controls">
+      <button id="decrease-font">A-</button>
+      <button id="increase-font">A+</button>
+      <button id="toggle-contrast">Contrast</button>
+    </div>
+  </div>
+
+  <nav class="site-nav" aria-label="Primary navigation">
+    <a href="#hero">Home</a>
+    <a href="#dashboard">Dashboard</a>
+    <a href="#housing">Housing</a>
+    <a href="#resources">Directory</a>
+    <a href="#news">News</a>
+    <a href="#youth">Youth</a>
+    <a href="#plan">Plan</a>
+  </nav>
+
+  <main>
+    <section id="hero" class="hero-section">
+      <div class="hero-copy">
+        <p class="eyebrow">Community resource guidance</p>
+        <h1>Find help, housing, and support in one interactive dashboard.</h1>
+        <p>AI suggestions, live tools, and trusted resource directories to help Delaware families, youth, and neighbors connect quickly.</p>
+      </div>
+      <div class="hero-grid">
+        <a href="#housing" class="hero-card">
+          <span>Housing</span>
+          <strong>Find listings, rent support, and Section 8 guidance</strong>
+        </a>
+        <a href="#resources" class="hero-card">
+          <span>Essentials</span>
+          <strong>Food, utilities, transportation, and health services</strong>
+        </a>
+        <a href="#youth" class="hero-card">
+          <span>Youth</span>
+          <strong>Risk assessment, caseworker connection, and supports</strong>
+        </a>
+        <a href="#news" class="hero-card">
+          <span>Updates</span>
+          <strong>Announcements, briefings, and local service changes</strong>
+        </a>
+      </div>
+    </section>
+
+    <section id="dashboard" class="section stats-overview">
+      <div class="section-header">
+        <h2>Dashboard stats</h2>
+        <p>Snapshot of the most urgent supports matched to your profile.</p>
+      </div>
+      <div class="stats-grid">
+        <article class="stat-card">
+          <span class="stat-label">Housing matches</span>
+          <strong>12 available</strong>
+          <p>Designed for Section 8, SRAP, and 55+ eligibility.</p>
+        </article>
+        <article class="stat-card">
+          <span class="stat-label">Nearby resources</span>
+          <strong>38 services</strong>
+          <p>Food pantries, transit vouchers, and case managers nearby.</p>
+        </article>
+        <article class="stat-card accent">
+          <span class="stat-label">Deadline countdown</span>
+          <strong>4 days</strong>
+          <p>Eviction prevention application window closing soon.</p>
+        </article>
+        <article class="stat-card">
+          <span class="stat-label">AI suggestions</span>
+          <strong>3 next steps</strong>
+          <p>Stabilize housing, explore youth support, and save listings.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="housing" class="section housing-section">
+      <div class="section-header">
+        <h2>Housing search & listings</h2>
+        <p>Interactive map, filters, and details to help people secure stable housing.</p>
+      </div>
+
+      <div class="housing-layout">
+        <div class="map-panel">
+          <div class="map-header">
+            <h3>Community housing map</h3>
+            <div class="legend">
+              <span class="legend-item legend-1">Section 8</span>
+              <span class="legend-item legend-2">SRAP</span>
+              <span class="legend-item legend-3">55+</span>
+            </div>
+          </div>
+          <div class="map-mockup" aria-label="Housing map mockup">
+            <div class="pin pin-1" title="Grant Street Apartments">A</div>
+            <div class="pin pin-2" title="Riverbend Supportive Housing">B</div>
+            <div class="pin pin-3" title="Oak Grove Senior Homes">C</div>
+          </div>
+          <div class="filter-pills">
+            <button class="pill active" data-filter="all">All</button>
+            <button class="pill" data-filter="section8">Section 8</button>
+            <button class="pill" data-filter="srap">SRAP</button>
+            <button class="pill" data-filter="senior">55+</button>
+          </div>
+        </div>
+
+        <div class="listing-panel">
+          <div class="listings-header">
+            <h3>Recommended listings</h3>
+            <p>Sorted by eligibility and match score.</p>
+          </div>
+          <div class="listing-cards" id="listingCards">
+            <article class="listing-card" data-category="section8">
+              <div>
+                <span class="badge">Section 8</span>
+                <h4>Grant Street Apartments</h4>
+                <p>Bright 1BR near transit and job training.</p>
+              </div>
+              <div class="listing-meta">
+                <strong>92%</strong>
+                <button class="small-button" data-action="details">Details</button>
+              </div>
+            </article>
+            <article class="listing-card" data-category="srap">
+              <div>
+                <span class="badge badge-secondary">SRAP</span>
+                <h4>Riverbend Supportive Housing</h4>
+                <p>Intensive case management, utilities included.</p>
+              </div>
+              <div class="listing-meta">
+                <strong>88%</strong>
+                <button class="small-button" data-action="details">Details</button>
+              </div>
+            </article>
+            <article class="listing-card" data-category="senior">
+              <div>
+                <span class="badge badge-tertiary">55+</span>
+                <h4>Oak Grove Senior Homes</h4>
+                <p>Community rooms, shuttle service, affordable rents.</p>
+              </div>
+              <div class="listing-meta">
+                <strong>85%</strong>
+                <button class="small-button" data-action="details">Details</button>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+
+      <aside class="detail-card" id="listingDetail">
+        <div class="detail-card-header">
+          <h3>Grant Street Apartments</h3>
+          <span class="chip">Match score 92%</span>
+        </div>
+        <p>One-bedroom units with supportive outreach, free bus pass, and eviction prevention referrals.</p>
+        <div class="detail-actions">
+          <button class="button primary" data-action="tour">Schedule Tour</button>
+          <button class="button outline" data-action="email">Email to Myself</button>
+          <button class="button" data-action="save">Save</button>
+        </div>
+      </aside>
+    </section>
+
+    <section id="resources" class="section resource-section">
+      <div class="section-header">
+        <h2>Resource directory</h2>
+        <p>Search state resources and community partners by category, need, and location.</p>
+      </div>
+      <div class="resource-search">
+        <input type="search" id="resourceSearch" placeholder="Search resources or services" aria-label="Search resources" />
+        <select id="resourceCategory">
+          <option value="all">All categories</option>
+          <option value="shelter">Shelter</option>
+          <option value="food">Food</option>
+          <option value="transport">Transportation</option>
+          <option value="health">Healthcare</option>
+        </select>
+      </div>
+      <div class="resource-tabs">
+        <button class="tab active" data-resource="all">All</button>
+        <button class="tab" data-resource="shelter">Shelter</button>
+        <button class="tab" data-resource="food">Food</button>
+        <button class="tab" data-resource="utilities">Utilities</button>
+        <button class="tab" data-resource="health">Health</button>
+      </div>
+      <div class="resource-grid" id="resourceGrid">
+        <article class="resource-card">
+          <h4>Delaware Housing Portal</h4>
+          <p>Apply for rental assistance, emergency shelter, and housing counseling.</p>
+          <a href="#" class="link-button">View details</a>
+        </article>
+        <article class="resource-card">
+          <h4>Local Food Network</h4>
+          <p>Weekly pantry schedules, delivery support, and meal vouchers.</p>
+          <a href="#" class="link-button">View details</a>
+        </article>
+        <article class="resource-card">
+          <h4>Transit Access Pass</h4>
+          <p>Reduced fare and free ride options for eligible households.</p>
+          <a href="#" class="link-button">View details</a>
+        </article>
+      </div>
+    </section>
+
+    <section id="news" class="section news-section">
+      <div class="section-header">
+        <h2>News feed</h2>
+        <p>Local impact stories, service updates, and briefings that matter.</p>
+      </div>
+      <div class="news-grid">
+        <article class="news-card highlight housing">
+          <span>Housing</span>
+          <h3>New emergency rental vouchers start in June</h3>
+          <p>State funding expands support for families at risk of eviction.</p>
+        </article>
+        <article class="news-card highlight food">
+          <span>Food</span>
+          <h3>Summer meal programs open for youth</h3>
+          <p>Free breakfast and lunch sites now available across Delaware.</p>
+        </article>
+        <article class="news-card highlight healthcare">
+          <span>Health</span>
+          <h3>Mobile clinic schedules for community wellness checks</h3>
+          <p>Walk-in screenings and immunizations hosted near partner agencies.</p>
+        </article>
+        <article class="news-card highlight employment">
+          <span>Employment</span>
+          <h3>Job training grants for transit and service work</h3>
+          <p>New classes and hiring events for local residents.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="youth" class="section youth-section">
+      <div class="section-header">
+        <h2>Youth pathway</h2>
+        <p>Assess risk, identify support, and connect to a caseworker in one flow.</p>
+      </div>
+      <div class="youth-grid">
+        <div class="pathway-card">
+          <h3>Progress steps</h3>
+          <ol>
+            <li>Complete the questions</li>
+            <li>Review risk score</li>
+            <li>Receive suggested supports</li>
+            <li>Connect with a caseworker</li>
+          </ol>
+        </div>
+        <div class="questionnaire-card">
+          <h3>Risk questionnaire</h3>
+          <div class="question-block">
+            <p>Current housing status</p>
+            <button class="option" data-score="3">Stable</button>
+            <button class="option" data-score="6">Unstable</button>
+            <button class="option" data-score="9">Shelter or couch-surfing</button>
+          </div>
+          <div class="question-block">
+            <p>School or work access</p>
+            <button class="option" data-score="2">On track</button>
+            <button class="option" data-score="5">Irregular</button>
+            <button class="option" data-score="8">Disconnected</button>
+          </div>
+          <div class="risk-result">
+            <span>Risk score</span>
+            <strong id="riskScore">8</strong>
+            <div class="score-bar"><div id="scoreFill" style="width: 30%"></div></div>
+          </div>
+          <div class="suggestion-card">
+            <h4>Suggested supports</h4>
+            <ul>
+              <li>Youth housing navigation</li>
+              <li>School success coaching</li>
+              <li>Caseworker connection request</li>
+            </ul>
+          </div>
+          <button class="button primary">Connect with caseworker</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="plan" class="section plan-section">
+      <div class="section-header">
+        <h2>Reminders + action plan</h2>
+        <p>Track next steps and complete tasks with a clean, accessible layout.</p>
+      </div>
+      <div class="plan-grid">
+        <div class="reminders-card">
+          <h3>Upcoming reminders</h3>
+          <ul class="reminder-list">
+            <li><label><input type="checkbox" /> Submit rental voucher application</label></li>
+            <li><label><input type="checkbox" /> Email caseworker about youth support</label></li>
+            <li><label><input type="checkbox" /> Save housing listing to profile</label></li>
+          </ul>
+        </div>
+        <div class="actions-card">
+          <h3>Next steps</h3>
+          <ol>
+            <li>Review housing eligibility</li>
+            <li>Schedule a tour for preferred listing</li>
+            <li>Confirm resource directory matches needs</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <aside class="floating-panel" aria-label="Persistent assistant panel">
+    <div class="panel-tabs">
+      <button class="panel-tab active" data-panel="assistant">AI assistant</button>
+      <button class="panel-tab" data-panel="notes">My Notes</button>
+      <button class="panel-tab" data-panel="saved">Saved Items</button>
+    </div>
+    <div class="panel-body">
+      <section class="panel-panel" data-panel-content="assistant">
+        <h3>Contextual suggestions</h3>
+        <p>Based on your recent activity, these supports are relevant:</p>
+        <ul>
+          <li>Review emergency rental assistance before deadline.</li>
+          <li>Explore youth referral services linked to caseworker support.</li>
+          <li>Save your top housing listing and email it to yourself.</li>
+        </ul>
+      </section>
+      <section class="panel-panel hidden" data-panel-content="notes">
+        <div class="notes-header">
+          <h3>Notes</h3>
+          <button id="saveNote" class="small-button">Save</button>
+        </div>
+        <textarea id="noteText" placeholder="Type notes as you move through resources..."></textarea>
+        <button class="button outline" id="emailNotes">Email notes to myself</button>
+      </section>
+      <section class="panel-panel hidden" data-panel-content="saved">
+        <h3>Saved items</h3>
+        <div class="saved-item">
+          <strong>Grant Street Apartments</strong>
+          <button class="small-button" data-action="email">Email</button>
+        </div>
+        <div class="saved-item">
+          <strong>Delaware Housing Portal</strong>
+          <button class="small-button" data-action="email">Email</button>
+        </div>
+      </section>
+    </div>
+  </aside>
+
+  <script src="script.js"></script>
+</body>
+</html>
