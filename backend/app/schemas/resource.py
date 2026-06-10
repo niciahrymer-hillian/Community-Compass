@@ -7,6 +7,7 @@ from uuid import UUID
 from pydantic import BaseModel
 
 # Category vocabulary (CC-12 + user-story #5). Invalid category → 422.
+# clothing + household added for the FirstStep real-data import.
 ResourceCategory = Literal[
     "housing",
     "food",
@@ -20,6 +21,8 @@ ResourceCategory = Literal[
     "financial_literacy",
     "legal_aid",
     "mentorship",
+    "clothing",
+    "household",
 ]
 
 

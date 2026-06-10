@@ -1,11 +1,14 @@
-"""Synthetic demo data (CC-29).
+"""Demo data (CC-29).
 
-Populates the catalog the recommendation engine matches against: Delaware
-community resources + housing listings. All records are synthetic (real org
-*types*, fake contacts/addresses) — no real personal information. Idempotent:
-seeds resources/listings only when those tables are empty, so it's safe to run
-repeatedly (e.g. on every deploy).
+Resources are REAL Delaware records imported from FirstStep
+(app/data/firststep_resources.json — 58 verified orgs across housing, clothing,
+and household assistance; credit: FirstStep / gitanitraj). Housing listings stay
+synthetic (no real rental inventory with coordinates available yet). Idempotent:
+seeds a table only when it's empty, so it's safe to run repeatedly.
 """
+
+import json
+from pathlib import Path
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -13,45 +16,49 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.listing import Listing
 from app.models.resource import Resource
 
-# ── Resources: ~12 across categories, in Delaware cities ────────────────────
-SAMPLE_RESOURCES = [
-    {"name": "Wilmington Housing Authority", "category": "housing", "need_tags": ["housing"],
-     "city": "Wilmington", "state": "DE", "contact_phone": "302-555-0101",
-     "website": "https://example.org/wha", "description": "Public housing + voucher intake."},
-    {"name": "Sunday Breakfast Mission", "category": "housing", "need_tags": ["housing", "food"],
-     "city": "Wilmington", "state": "DE", "contact_phone": "302-555-0102",
-     "description": "Emergency shelter and hot meals."},
-    {"name": "Food Bank of Delaware", "category": "food", "need_tags": ["food"],
-     "city": "Newark", "state": "DE", "contact_phone": "302-555-0103",
-     "website": "https://example.org/fbd", "description": "Pantry network + SNAP help."},
-    {"name": "DART First State Transit", "category": "transportation", "need_tags": ["transportation"],
-     "city": "Dover", "state": "DE", "contact_phone": "302-555-0104",
-     "description": "Statewide bus + paratransit; reduced-fare program."},
-    {"name": "Delaware JobLink", "category": "employment", "need_tags": ["employment"],
-     "city": "Dover", "state": "DE", "contact_phone": "302-555-0105",
-     "description": "Job search, training, and workforce development."},
-    {"name": "Westside Family Healthcare", "category": "wellness", "need_tags": ["wellness", "health"],
-     "city": "Wilmington", "state": "DE", "contact_phone": "302-555-0106",
-     "description": "Sliding-scale medical + behavioral health."},
-    {"name": "Delaware Center for Justice", "category": "legal_aid", "need_tags": ["safety", "legal_aid"],
-     "city": "Wilmington", "state": "DE", "contact_phone": "302-555-0107",
-     "description": "Free legal aid and reentry support."},
-    {"name": "YMCA Youth Services", "category": "youth_services", "need_tags": ["youth_services", "education"],
-     "city": "Newark", "state": "DE", "contact_phone": "302-555-0108",
-     "description": "After-school, mentoring, and transition programs."},
-    {"name": "Delaware Money School", "category": "financial_literacy", "need_tags": ["financial_literacy"],
-     "city": "Dover", "state": "DE", "contact_phone": "302-555-0109",
-     "description": "Free budgeting and financial-literacy classes."},
-    {"name": "DMV ID & Documents Help", "category": "documents", "need_tags": ["documents"],
-     "city": "Dover", "state": "DE", "contact_phone": "302-555-0110",
-     "description": "Assistance obtaining state ID and vital records."},
-    {"name": "Big Brothers Big Sisters of Delaware", "category": "mentorship", "need_tags": ["mentorship"],
-     "city": "Wilmington", "state": "DE", "contact_phone": "302-555-0111",
-     "description": "One-to-one youth mentoring."},
-    {"name": "Delaware Adult Education (GED)", "category": "education", "need_tags": ["education"],
-     "city": "Newark", "state": "DE", "contact_phone": "302-555-0112",
-     "description": "Free GED prep and adult basic education."},
-]
+_DATA_FILE = Path(__file__).resolve().parent.parent / "data" / "firststep_resources.json"
+
+# FirstStep category → our resource category vocabulary.
+_CATEGORY_MAP = {
+    "Housing Assistance": "housing",
+    "Clothing & Incidentals": "clothing",
+    "Furniture & Household Items": "household",
+}
+
+
+def _map_firststep(r: dict) -> dict:
+    """Map one FirstStep resource record onto our Resource columns."""
+    loc = (r.get("locations") or [{}])[0]
+    phone = (r.get("phones") or [{}])[0].get("number")
+    website = (r.get("websites") or [{}])[0].get("url")
+    population = r.get("population")
+    notes = "; ".join(
+        x for x in [r.get("eligibility"),
+                    f"Population: {population}" if population and population != "All" else None]
+        if x
+    ) or None
+    return {
+        "name": (r.get("organization") or r.get("summary") or "Resource")[:200],
+        "category": _CATEGORY_MAP.get(r.get("category"), "housing"),
+        "description": r.get("description") or r.get("summary"),
+        "need_tags": [t.lower() for t in (r.get("tags") or [])][:8],
+        "contact_phone": phone,
+        "website": website,
+        "address": loc.get("address"),
+        "city": loc.get("city"),
+        "state": loc.get("state"),
+        "eligibility_notes": notes,
+    }
+
+
+def _load_resources() -> list[dict]:
+    raw = json.loads(_DATA_FILE.read_text())
+    records = raw.get("records", raw) if isinstance(raw, dict) else raw
+    return [_map_firststep(r) for r in records]
+
+
+# 58 real Delaware resources, mapped at import time.
+SAMPLE_RESOURCES = _load_resources()
 
 # ── Listings: ~6 with program flags + real-ish DE coordinates ───────────────
 SAMPLE_LISTINGS = [
