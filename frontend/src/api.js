@@ -38,6 +38,7 @@ export const api = {
   devLogin: (email, role) => request("/auth/dev-login", { method: "POST", body: { email, role } }),
   createIntake: (data) => request("/intake", { method: "POST", body: data, auth: true }),
   recommendations: () => request("/recommendations/me", { auth: true }),
+  risk: () => request("/risk/me", { auth: true }),
   housing: (qs = "") => request(`/housing${qs}`),
   resources: (qs = "") => request(`/resources${qs}`),
   assistantChat: (messages) => request("/assistant/chat", { method: "POST", body: { messages } }),
