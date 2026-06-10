@@ -23,3 +23,7 @@ __pycache__/
 
 # editor
 .vscode/
+
+# frontend build output
+dist/
+**/dist/
