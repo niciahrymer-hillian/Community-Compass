@@ -46,4 +46,8 @@ export const api = {
   caseworkerSummary: () => request("/caseworker/summary", { auth: true }),
   residents: (risk = "") => request(`/caseworker/residents${risk ? `?risk=${risk}` : ""}`, { auth: true }),
   resident: (id) => request(`/caseworker/residents/${id}`, { auth: true }),
+  // Admin resource management (CC-22).
+  createResource: (data) => request("/resources", { method: "POST", body: data, auth: true }),
+  updateResource: (id, data) => request(`/resources/${id}`, { method: "PUT", body: data, auth: true }),
+  deactivateResource: (id) => request(`/resources/${id}/deactivate`, { method: "POST", auth: true }),
 };

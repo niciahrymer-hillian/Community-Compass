@@ -8,6 +8,7 @@ import HousingMap from "./pages/HousingMap.jsx";
 import Resources from "./pages/Resources.jsx";
 import Assistant from "./pages/Assistant.jsx";
 import Caseworker from "./pages/Caseworker.jsx";
+import Admin from "./pages/Admin.jsx";
 
 // Gate pages that need a signed-in resident; bounce to /login otherwise.
 function RequireAuth({ children }) {
@@ -24,6 +25,7 @@ export default function App() {
           <Route path="/intake" element={<RequireAuth><Intake /></RequireAuth>} />
           <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
           <Route path="/caseworker" element={<RequireAuth><Caseworker /></RequireAuth>} />
+          <Route path="/admin" element={<RequireAuth><Admin /></RequireAuth>} />
           {/* Map + resources + assistant are public (no auth needed to browse). */}
           <Route path="/housing" element={<HousingMap />} />
           <Route path="/resources" element={<Resources />} />
