@@ -27,3 +27,7 @@ __pycache__/
 # frontend build output
 dist/
 **/dist/
+
+# java / maven build output
+target/
+**/target/
