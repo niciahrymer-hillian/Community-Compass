@@ -28,6 +28,13 @@ async def test_seed_is_idempotent(db_session):
     assert await _count(db_session, Listing) == len(SAMPLE_LISTINGS)
 
 
+async def test_seeded_resources_are_real_categories(async_client, db_session):
+    """The import lands real FirstStep categories (housing/clothing/household)."""
+    await seed_demo(db_session)
+    clothing = await async_client.get("/resources?category=clothing")
+    assert clothing.status_code == 200 and len(clothing.json()) > 0
+
+
 async def test_seeded_data_drives_recommendations(async_client, db_session):
     """End-to-end smoke: after seeding, a resident gets real recommendations."""
     await seed_demo(db_session)
@@ -45,14 +52,15 @@ async def test_seeded_data_drives_recommendations(async_client, db_session):
     )
     token = jwt.encode({"sub": uid, "exp": int(time.time()) + 3600}, TEST_JWT_SECRET, algorithm="HS256")
     headers = {"Authorization": f"Bearer {token}"}
+    # Homeless + Section 8 → housing-assistance resources + Section 8 listings.
     await async_client.post(
         "/intake",
-        json={"food_access_need": True, "housing_assistance_type": "section8", "location": "Wilmington, DE"},
+        json={"housing_status": "homeless", "housing_assistance_type": "section8", "location": "Wilmington, DE"},
         headers=headers,
     )
 
     r = await async_client.get("/recommendations/me", headers=headers)
     assert r.status_code == 200
     body = r.json()
-    assert len(body["resources"]) > 0   # food bank etc.
+    assert len(body["resources"]) > 0   # real housing-assistance orgs
     assert len(body["housing"]) > 0     # Section 8 listings

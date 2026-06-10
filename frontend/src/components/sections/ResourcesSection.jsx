@@ -4,7 +4,7 @@ import { isSaved, toggleSaved } from "../../saved";
 
 // Resource directory — food / transportation / clothing emphasized, all browsable.
 const CATEGORIES = [
-  "", "food", "transportation", "clothing", "housing", "employment", "wellness",
+  "", "housing", "clothing", "household", "food", "transportation", "employment", "wellness",
   "education", "documents", "safety", "youth_services", "financial_literacy", "legal_aid", "mentorship",
 ];
 
