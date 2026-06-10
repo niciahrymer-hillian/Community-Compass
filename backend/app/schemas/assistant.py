@@ -1,6 +1,7 @@
 """Schemas for the AI-guided intake assistant (CC-05 / CC-06)."""
 
 from typing import List, Literal, Optional
+from uuid import UUID
 
 from pydantic import BaseModel
 
@@ -36,6 +37,25 @@ class IntakeSuggestion(BaseModel):
     safety_concern: Optional[bool] = None
 
 
+class ResourceLink(BaseModel):
+    """A real resource the assistant surfaces as a match for the detected need."""
+
+    id: UUID
+    name: str
+    category: str
+    contact_phone: Optional[str] = None
+    website: Optional[str] = None
+    city: Optional[str] = None
+
+
+class SuggestedAction(BaseModel):
+    """A form the assistant offers to launch (e.g. transportation request, youth risk)."""
+
+    kind: Literal["intake", "risk", "housing"]
+    label: str
+    prefill: dict = {}
+
+
 class ChatResponse(BaseModel):
     reply: str
     intent: str
@@ -43,3 +63,7 @@ class ChatResponse(BaseModel):
     suggestions: IntakeSuggestion
     # HomeMatch program explanations relevant to the message (grounding).
     program_info: List[str] = []
+    # Real resource matches for the detected need (search).
+    resources: List[ResourceLink] = []
+    # A form to launch next (intake prefill / youth risk / housing).
+    action: Optional[SuggestedAction] = None

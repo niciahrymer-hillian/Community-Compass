@@ -136,6 +136,66 @@ def program_info(message: str) -> list[str]:
     return [HOUSING_CONTEXT[k] for k in keys if k in HOUSING_CONTEXT]
 
 
+# Detected intent → resource categories to search (the assistant as a search box).
+_INTENT_CATEGORIES = {
+    "housing": ["housing"],
+    "food": ["food"],
+    "employment": ["employment", "financial_literacy"],
+    "transportation": ["transportation"],
+    "wellness": ["wellness"],
+    "safety": ["safety", "legal_aid"],
+    "documents": ["documents"],
+    "education": ["education", "youth_services", "mentorship"],
+}
+
+# Intent → the form to launch next (kind, label, intake prefill).
+_INTENT_ACTION = {
+    "transportation": ("intake", "Request transportation help", {"transportation_need": True}),
+    "food": ("intake", "Get food assistance", {"food_access_need": True}),
+    "wellness": ("intake", "Get health & wellness support", {"health_wellness_need": True}),
+    "safety": ("intake", "Get safety support", {"safety_concern": True}),
+    "documents": ("intake", "Get help with documents", {"document_status": "missing_id"}),
+    "housing": ("housing", "Browse housing matches", {}),
+    "employment": ("intake", "Get employment support", {}),
+    "education": ("intake", "Get education support", {}),
+}
+
+_YOUTH_KEYWORDS = ["youth", "aging out", "age out", "foster", "young adult", "transition"]
+
+
+async def match_resources(db, intent: str, limit: int = 3) -> list[dict]:
+    """Real resources for the detected need — the assistant's 'search results'."""
+    from sqlalchemy import select
+
+    from app.models.resource import Resource
+
+    cats = _INTENT_CATEGORIES.get(intent, [])
+    if not cats:
+        return []
+    rows = (
+        await db.scalars(
+            select(Resource)
+            .where(Resource.is_active.is_(True), Resource.category.in_(cats))
+            .limit(limit)
+        )
+    ).all()
+    return [
+        {"id": str(r.id), "name": r.name, "category": r.category,
+         "contact_phone": r.contact_phone, "website": r.website, "city": r.city}
+        for r in rows
+    ]
+
+
+def suggest_action(intent: str, message: str) -> dict | None:
+    """Pick the form to offer next: youth → risk, else intent → intake/housing."""
+    if any(w in (message or "").lower() for w in _YOUTH_KEYWORDS):
+        return {"kind": "risk", "label": "Check your youth risk score", "prefill": {}}
+    if intent in _INTENT_ACTION:
+        kind, label, prefill = _INTENT_ACTION[intent]
+        return {"kind": kind, "label": label, "prefill": prefill}
+    return None
+
+
 async def chat(messages: list[dict]) -> dict:
     """Return a reply + detected intent + intake suggestions + program info.
 
