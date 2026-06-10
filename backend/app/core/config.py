@@ -38,6 +38,11 @@ class Settings(BaseSettings):
     # ── CORS ────────────────────────────────────────────────────────────────
     FRONTEND_URL: str = "http://localhost:5173"  # the only origin allowed to call this API
 
+    # ── Dev login ────────────────────────────────────────────────────────────
+    # Local-only shortcut so the frontend can sign in without a real Supabase
+    # project. MUST be set to false in production (Supabase issues real tokens).
+    DEV_LOGIN_ENABLED: bool = True
+
 
 # Module-level singleton — constructed once at import, imported everywhere.
 # Never call Settings() again elsewhere; share this instance so config is uniform.
