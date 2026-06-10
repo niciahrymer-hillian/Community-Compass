@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { api } from "../../api";
 
-// Weekly community updates from the Java service (/api/news), incl. "why it matters".
+// Weekly community updates from the Java service (/api/news). The payload is
+// FirstStep's NewsItem shape (headline / summary / why_it_matters / etc.).
 export default function NewsSection() {
   const [items, setItems] = useState(null);
   const [error, setError] = useState("");
@@ -21,12 +22,14 @@ export default function NewsSection() {
           <article key={n.id} className="rec">
             <div className="section-head">
               <h3>{n.headline}</h3>
-              <span className={`badge ${n.urgency}`}>{n.urgency}</span>
+              {n.urgency && <span className={`badge ${n.urgency}`}>{n.urgency}</span>}
             </div>
-            <span className="tag">{n.category}</span>
+            {n.type && <span className="tag">{n.type}</span>}
             <p>{n.summary}</p>
-            {n.whyItMatters && <p className="why"><strong>Why it matters:</strong> {n.whyItMatters}</p>}
-            <p className="muted">{[n.source, n.deadline && `Deadline: ${n.deadline}`].filter(Boolean).join(" · ")}</p>
+            {n.why_it_matters && <p className="why"><strong>Why it matters:</strong> {n.why_it_matters}</p>}
+            <p className="muted">
+              {[n.source_name, n.expires && `Expires: ${n.expires}`].filter(Boolean).join(" · ")}
+            </p>
           </article>
         ))}
       </div>
