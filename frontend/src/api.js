@@ -42,4 +42,8 @@ export const api = {
   assistantChat: (messages) => request("/assistant/chat", { method: "POST", body: { messages } }),
   // Consolidated newsfeed (FirstStep items + HomeMatch HUD/DSHA) — Python service.
   news: () => request("/news"),
+  // Caseworker / navigator dashboard.
+  caseworkerSummary: () => request("/caseworker/summary", { auth: true }),
+  residents: (risk = "") => request(`/caseworker/residents${risk ? `?risk=${risk}` : ""}`, { auth: true }),
+  resident: (id) => request(`/caseworker/residents/${id}`, { auth: true }),
 };

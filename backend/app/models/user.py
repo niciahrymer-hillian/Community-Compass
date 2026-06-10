@@ -15,9 +15,9 @@ from sqlalchemy.sql import func                       # func.now() = DB-side tim
 
 from app.core.database import Base
 
-# Allowed roles (user-story #13). "client" = a person seeking housing/support.
-# Kept as a constant so schemas/tests can reference the same source of truth.
-ROLES = ("client", "caseworker", "admin", "developer")
+# Allowed roles (user-story #13 / CC-25). "client" = a person seeking housing/support;
+# "caseworker"/"navigator" are support staff. Kept as a constant for schemas/tests.
+ROLES = ("client", "caseworker", "navigator", "volunteer", "admin", "developer")
 
 
 class User(Base):
@@ -41,7 +41,7 @@ class User(Base):
         # Enforce the role whitelist at the DB level too — defense in depth beyond
         # the Pydantic Literal, so bad data can't sneak in via raw SQL/migrations.
         CheckConstraint(
-            "role IN ('client', 'caseworker', 'admin', 'developer')",
+            "role IN ('client', 'caseworker', 'navigator', 'volunteer', 'admin', 'developer')",
             name="ck_users_role",
         ),
     )
