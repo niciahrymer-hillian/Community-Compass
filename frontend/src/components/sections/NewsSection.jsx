@@ -24,11 +24,13 @@ export default function NewsSection() {
               <h3>{n.headline}</h3>
               {n.urgency && <span className={`badge ${n.urgency}`}>{n.urgency}</span>}
             </div>
-            {n.type && <span className="tag">{n.type}</span>}
+            {n.category && <span className="tag">{n.category}</span>}
             <p>{n.summary}</p>
             {n.why_it_matters && <p className="why"><strong>Why it matters:</strong> {n.why_it_matters}</p>}
             <p className="muted">
-              {[n.source_name, n.expires && `Expires: ${n.expires}`].filter(Boolean).join(" · ")}
+              {n.url
+                ? <a href={n.url} target="_blank" rel="noreferrer">{n.source || "Read more"}</a>
+                : [n.source, n.published].filter(Boolean).join(" · ")}
             </p>
           </article>
         ))}
