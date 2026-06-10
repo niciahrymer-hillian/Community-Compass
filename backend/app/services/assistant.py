@@ -10,6 +10,10 @@ reply. It supports — never replaces — the intake; the human reviews before s
 import httpx
 
 from app.core.config import settings
+# HOUSING_CONTEXT is HomeMatch's actual program knowledge (their verbatim
+# context_service), so the assistant can explain Section 8 / SRAP / 55+ / LIHTC /
+# Fair Housing / income rules accurately — and ground the LLM with the same text.
+from app.homematch.context_service import HOUSING_CONTEXT
 
 # Intent → trigger keywords. Order matters only for readability; scoring is by count.
 INTENT_KEYWORDS = {
@@ -114,24 +118,49 @@ _SYSTEM_PROMPT = (
     "legal advice. You support intake; the person reviews answers before saving."
 )
 
+# Message keywords → HomeMatch HOUSING_CONTEXT program key.
+_PROGRAM_KEYWORDS = {
+    "section8": ["section 8", "section8", "voucher", "hcv"],
+    "srap": ["srap", "state rental"],
+    "hopa": ["55+", "55 plus", "senior housing", "older persons", "hopa"],
+    "lihtc": ["lihtc", "income-restricted", "income restricted", "tax credit"],
+    "fair_housing": ["fair housing", "discriminat", "my rights", "refuse to rent"],
+    "income_verification": ["proof of income", "income requirement", "verify income", "ssi", "ssdi"],
+}
+
+
+def program_info(message: str) -> list[str]:
+    """Relevant HomeMatch program explanations for a message (grounding)."""
+    text = (message or "").lower()
+    keys = [k for k, kws in _PROGRAM_KEYWORDS.items() if any(w in text for w in kws)]
+    return [HOUSING_CONTEXT[k] for k in keys if k in HOUSING_CONTEXT]
+
 
 async def chat(messages: list[dict]) -> dict:
-    """Return a reply + the detected intent + suggested intake fields.
+    """Return a reply + detected intent + intake suggestions + program info.
 
     Uses Groq when a real key is configured, otherwise a rule-based reply. Either
-    way, intent + suggestions come from the deterministic rules so the structured
-    output is stable and testable.
+    way, intent/suggestions/program_info come from deterministic rules so the
+    structured output is stable and testable.
     """
     last_user = next((m["content"] for m in reversed(messages) if m.get("role") == "user"), "")
     intent = classify_intent(last_user)
     suggestions = suggest_intake(last_user)
+    programs = program_info(last_user)
 
     if _groq_ready():
+        # Ground the LLM with HomeMatch's program knowledge for this message.
+        system = _SYSTEM_PROMPT
+        if programs:
+            system += "\n\nHousing program reference (use this, don't invent):\n" + "\n".join(programs)
         try:
-            reply = await _groq_reply(messages, _SYSTEM_PROMPT)
+            reply = await _groq_reply(messages, system)
         except Exception:
             reply = _FOLLOW_UP[intent["intent"]]  # never fail the request on AI error
     else:
         reply = _FOLLOW_UP[intent["intent"]]
+        # Without an LLM, surface the program explanation directly.
+        if programs:
+            reply += " " + programs[0]
 
-    return {"reply": reply, **intent, "suggestions": suggestions}
+    return {"reply": reply, **intent, "suggestions": suggestions, "program_info": programs}

@@ -41,3 +41,5 @@ class ChatResponse(BaseModel):
     intent: str
     confidence: float
     suggestions: IntakeSuggestion
+    # HomeMatch program explanations relevant to the message (grounding).
+    program_info: List[str] = []
