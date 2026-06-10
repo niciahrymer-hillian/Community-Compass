@@ -2,8 +2,6 @@
 // production it comes from Supabase, in dev from POST /auth/dev-login.
 
 const BASE = import.meta.env.VITE_PYTHON_API_URL || "http://localhost:8000";
-// The newsfeed is served by the Java service (port 8080).
-const JAVA_BASE = import.meta.env.VITE_JAVA_API_URL || "http://localhost:8080";
 
 export const getToken = () => localStorage.getItem("cc_token");
 export const setToken = (t) => localStorage.setItem("cc_token", t);
@@ -42,10 +40,6 @@ export const api = {
   housing: (qs = "") => request(`/housing${qs}`),
   resources: (qs = "") => request(`/resources${qs}`),
   assistantChat: (messages) => request("/assistant/chat", { method: "POST", body: { messages } }),
-  // Newsfeed lives on the Java service.
-  news: async () => {
-    const res = await fetch(`${JAVA_BASE}/api/news`);
-    if (!res.ok) throw new Error(`News unavailable (${res.status})`);
-    return res.json();
-  },
+  // Consolidated newsfeed (FirstStep items + HomeMatch HUD/DSHA) — Python service.
+  news: () => request("/news"),
 };
