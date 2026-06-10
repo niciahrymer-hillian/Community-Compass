@@ -79,3 +79,10 @@ async def get_current_user(
     if not user:
         raise HTTPException(status_code=401, detail="User not found")
     return user                                        # injected into any route that Depends on it
+
+
+async def get_current_admin(user: User = Depends(get_current_user)) -> User:
+    """Role guard for admin-only routes (e.g. managing resources). 403 if not admin."""
+    if user.role != "admin":
+        raise HTTPException(status_code=403, detail="Admin role required")
+    return user
