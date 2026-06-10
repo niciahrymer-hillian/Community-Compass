@@ -104,6 +104,17 @@ async def test_update_changes_field(async_client):
     assert r.json()["city"] == "Newark"
 
 
+async def test_deactivate_then_reactivate_via_put(async_client):
+    headers = await _admin_headers(async_client)
+    created = await async_client.post("/resources", json=_resource(name="Toggle"), headers=headers)
+    rid = created.json()["id"]
+    await async_client.post(f"/resources/{rid}/deactivate", headers=headers)
+    # Admin UI reactivates with PUT is_active=true.
+    r = await async_client.put(f"/resources/{rid}", json={"is_active": True}, headers=headers)
+    assert r.status_code == 200 and r.json()["is_active"] is True
+    assert "Toggle" in [x["name"] for x in (await async_client.get("/resources")).json()]
+
+
 async def test_deactivate_hides_from_default_list(async_client):
     headers = await _admin_headers(async_client)
     created = await async_client.post("/resources", json=_resource(name="OldProgram"), headers=headers)
