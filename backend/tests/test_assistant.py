@@ -3,7 +3,7 @@
 No GROQ key in the test env, so the deterministic rule-based path is exercised.
 """
 
-from app.services.assistant import classify_intent, suggest_intake
+from app.services.assistant import classify_intent, program_info, suggest_intake
 
 
 # ── Unit: classification + extraction ─────────────────────────────────────────
@@ -50,3 +50,23 @@ async def test_chat_empty_messages_is_general(async_client):
     r = await async_client.post("/assistant/chat", json={"messages": []})
     assert r.status_code == 200
     assert r.json()["intent"] == "general_support"
+
+
+# ── HomeMatch grounding (HOUSING_CONTEXT) ─────────────────────────────────────
+
+def test_program_info_detects_section8():
+    info = program_info("do I qualify for a section 8 voucher?")
+    assert len(info) == 1
+    assert "Section 8" in info[0]
+
+
+async def test_chat_grounds_program_questions(async_client):
+    r = await async_client.post(
+        "/assistant/chat",
+        json={"messages": [{"role": "user", "content": "what is SRAP and section 8?"}]},
+    )
+    assert r.status_code == 200
+    body = r.json()
+    # HomeMatch's actual program text is surfaced.
+    assert len(body["program_info"]) == 2
+    assert any("SRAP" in p or "State Rental" in p for p in body["program_info"])
