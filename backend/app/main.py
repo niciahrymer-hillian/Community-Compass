@@ -14,6 +14,7 @@ from fastapi.responses import JSONResponse
 from app.api.routes.health import router as health_router
 from app.api.routes.housing import router as housing_router
 from app.api.routes.intake import router as intake_router
+from app.api.routes.recommendations import router as recommendations_router
 from app.api.routes.resources import router as resources_router
 from app.api.routes.users import router as users_router
 from app.core.config import settings
@@ -56,3 +57,4 @@ app.include_router(users_router)    # /users/register, /users/me
 app.include_router(intake_router)   # /intake (CC-30)
 app.include_router(resources_router)  # /resources (CC-31)
 app.include_router(housing_router)    # /housing (CC-32 + CC-10 matching)
+app.include_router(recommendations_router)  # /recommendations (CC-33 + CC-13)
