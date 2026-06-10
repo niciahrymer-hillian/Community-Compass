@@ -69,6 +69,14 @@ input, select, textarea {
 .filters { flex-direction: row; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
 .filters input { flex: 1; min-width: 160px; }
 
+/* Assistant chat */
+.chat { display: flex; flex-direction: column; gap: 0.5rem; margin: 1rem 0; }
+.bubble { max-width: 80%; padding: 0.6rem 0.85rem; border-radius: 14px; font-size: 0.95rem; }
+.bubble.assistant { background: #eef3f8; color: var(--text); align-self: flex-start; border-bottom-left-radius: 4px; }
+.bubble.user { background: var(--green); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
+.suggestions { margin-top: 1rem; padding: 1rem; background: #f3f8f5; border: 1px solid #d7e8de; border-radius: 12px; }
+.suggestions ul { margin: 0.5rem 0; }
+
 /* Map */
 .map { height: 520px; width: 100%; border-radius: 12px; border: 1px solid var(--line); }
 

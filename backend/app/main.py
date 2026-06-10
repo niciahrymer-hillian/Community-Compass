@@ -11,6 +11,7 @@ from fastapi.exceptions import RequestValidationError # raised when request bodi
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
+from app.api.routes.assistant import router as assistant_router
 from app.api.routes.auth import router as auth_router
 from app.api.routes.health import router as health_router
 from app.api.routes.housing import router as housing_router
@@ -60,3 +61,4 @@ app.include_router(intake_router)   # /intake (CC-30)
 app.include_router(resources_router)  # /resources (CC-31)
 app.include_router(housing_router)    # /housing (CC-32 + CC-10 matching)
 app.include_router(recommendations_router)  # /recommendations (CC-33 + CC-13)
+app.include_router(assistant_router)  # /assistant (CC-05 + CC-06)

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../api";
 
@@ -15,6 +15,15 @@ export default function Intake() {
   const [form, setForm] = useState(EMPTY);
   const [error, setError] = useState("");
   const nav = useNavigate();
+
+  // Prefill from the assistant ("Use these in my intake"), then clear it.
+  useEffect(() => {
+    const raw = localStorage.getItem("cc_intake_prefill");
+    if (raw) {
+      setForm((f) => ({ ...f, ...JSON.parse(raw) }));
+      localStorage.removeItem("cc_intake_prefill");
+    }
+  }, []);
 
   const set = (k) => (e) => {
     const v = e.target.type === "checkbox" ? e.target.checked : e.target.value;

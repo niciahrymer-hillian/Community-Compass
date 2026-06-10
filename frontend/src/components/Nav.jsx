@@ -14,6 +14,7 @@ export default function Nav() {
     <header className="nav">
       <Link to="/" className="brand">🧭 Community Compass</Link>
       <nav className="nav-links">
+        <Link to="/assistant">Assistant</Link>
         <Link to="/housing">Housing Map</Link>
         <Link to="/resources">Resources</Link>
         {getToken() && <Link to="/intake">Intake</Link>}

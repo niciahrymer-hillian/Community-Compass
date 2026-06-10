@@ -38,4 +38,5 @@ export const api = {
   recommendations: () => request("/recommendations/me", { auth: true }),
   housing: (qs = "") => request(`/housing${qs}`),
   resources: (qs = "") => request(`/resources${qs}`),
+  assistantChat: (messages) => request("/assistant/chat", { method: "POST", body: { messages } }),
 };
