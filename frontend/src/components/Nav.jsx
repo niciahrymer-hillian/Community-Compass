@@ -19,6 +19,9 @@ export default function Nav() {
         <Link to="/resources">Resources</Link>
         {getToken() && <Link to="/intake">Intake</Link>}
         {getToken() && <Link to="/dashboard">Dashboard</Link>}
+        {getToken() && ["caseworker", "navigator", "admin"].includes(user?.role) && (
+          <Link to="/caseworker">Caseworker</Link>
+        )}
         {getToken() ? (
           <button className="link-btn" onClick={signOut}>
             Sign out{user?.email ? ` (${user.email})` : ""}

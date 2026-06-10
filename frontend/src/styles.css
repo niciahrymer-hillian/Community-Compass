@@ -90,6 +90,14 @@ input, select, textarea {
 .badge.low { background: #e7f1ec; color: var(--green); }
 .why { background: #f3f8f5; border-radius: 8px; padding: 0.4rem 0.6rem; font-size: 0.88rem; }
 
+/* Caseworker dashboard */
+.caseworker-grid { display: grid; grid-template-columns: 320px 1fr; gap: 1.25rem; align-items: start; }
+.resident-list { list-style: none; padding: 0; margin: 0; }
+.resident-list li { padding: 0.5rem 0; border-bottom: 1px solid var(--line); }
+.resident-row { display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 0.5rem; background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 0.5rem 0.7rem; cursor: pointer; font: inherit; color: var(--text); }
+.resident-row:hover { border-color: var(--green); }
+@media (max-width: 760px) { .caseworker-grid { grid-template-columns: 1fr; } }
+
 /* Floating assistant/notes/saved panel */
 .panel { position: fixed; right: 1rem; bottom: 1rem; width: 320px; max-width: calc(100vw - 2rem); background: #fff; border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); z-index: 1000; }
 .panel.collapsed { width: auto; }
