@@ -70,3 +70,37 @@ async def test_chat_grounds_program_questions(async_client):
     # HomeMatch's actual program text is surfaced.
     assert len(body["program_info"]) == 2
     assert any("SRAP" in p or "State Rental" in p for p in body["program_info"])
+
+
+# ── Search (resource links) + form triggers ───────────────────────────────────
+
+async def test_chat_returns_real_resource_links(async_client, db_session):
+    from app.services.seeding import seed_demo
+
+    await seed_demo(db_session)
+    r = await async_client.post(
+        "/assistant/chat",
+        json={"messages": [{"role": "user", "content": "I need housing help"}]},
+    )
+    body = r.json()
+    assert len(body["resources"]) > 0
+    assert body["resources"][0]["category"] == "housing"
+    assert "id" in body["resources"][0]
+
+
+async def test_chat_ride_triggers_transportation_form(async_client):
+    r = await async_client.post(
+        "/assistant/chat",
+        json={"messages": [{"role": "user", "content": "I need a ride"}]},
+    )
+    action = r.json()["action"]
+    assert action["kind"] == "intake"
+    assert action["prefill"].get("transportation_need") is True
+
+
+async def test_chat_youth_triggers_risk_form(async_client):
+    r = await async_client.post(
+        "/assistant/chat",
+        json={"messages": [{"role": "user", "content": "I'm a young adult aging out of foster care"}]},
+    )
+    assert r.json()["action"]["kind"] == "risk"

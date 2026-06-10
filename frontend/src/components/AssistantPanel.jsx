@@ -40,6 +40,8 @@ function MiniChat() {
   ]);
   const [input, setInput] = useState("");
   const [suggestions, setSuggestions] = useState({});
+  const [resources, setResources] = useState([]);
+  const [action, setAction] = useState(null);
   const nav = useNavigate();
 
   async function send(e) {
@@ -53,9 +55,18 @@ function MiniChat() {
       setMessages((m) => [...m, { role: "assistant", content: res.reply }]);
       const clean = Object.fromEntries(Object.entries(res.suggestions || {}).filter(([, v]) => v != null));
       setSuggestions((s) => ({ ...s, ...clean }));
+      setResources(res.resources || []);
+      setAction(res.action || null);
     } catch {
       setMessages((m) => [...m, { role: "assistant", content: "(assistant offline)" }]);
     }
+  }
+
+  function runAction(a) {
+    if (a.kind === "housing") return nav("/housing");
+    const prefill = a.prefill && Object.keys(a.prefill).length ? a.prefill : suggestions;
+    if (Object.keys(prefill).length) localStorage.setItem("cc_intake_prefill", JSON.stringify(prefill));
+    nav("/intake");
   }
 
   return (
@@ -63,7 +74,20 @@ function MiniChat() {
       <div className="chat">
         {messages.map((m, i) => <div key={i} className={`bubble ${m.role}`}>{m.content}</div>)}
       </div>
-      {Object.keys(suggestions).length > 0 && (
+      {resources.length > 0 && (
+        <ul className="mini-resources">
+          {resources.map((r) => (
+            <li key={r.id}>
+              {r.website ? <a href={r.website} target="_blank" rel="noreferrer">{r.name}</a> : r.name}
+              <span className="muted"> · {r.category}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+      {action && (
+        <button className="btn small" onClick={() => runAction(action)}>{action.label} →</button>
+      )}
+      {!action && Object.keys(suggestions).length > 0 && (
         <button className="btn small" onClick={() => { localStorage.setItem("cc_intake_prefill", JSON.stringify(suggestions)); nav("/intake"); }}>
           Use in intake →
         </button>
