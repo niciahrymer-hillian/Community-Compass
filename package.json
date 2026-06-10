@@ -6,9 +6,16 @@
   "scripts": {
     "dev": "npx lite-server --baseDir .",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "setup": "npm install && cd frontend && npm install",
+    "seed": "cd backend && ./.venv/bin/python -m scripts.seed",
+    "start": "concurrently -k -n api,java,web -c green,yellow,cyan \"npm:start:api\" \"npm:start:java\" \"npm:start:web\"",
+    "start:api": "cd backend && ./.venv/bin/python -m scripts.seed && ./.venv/bin/uvicorn app.main:app --reload --port 8000",
+    "start:java": "cd java-service && JAVA_HOME=\"$(/usr/libexec/java_home -v 17)\" mvn -q spring-boot:run",
+    "start:web": "cd frontend && npm run dev"
   },
   "devDependencies": {
+    "concurrently": "^9.0.0",
     "jsdom": "^23.0.0",
     "lite-server": "^2.6.1",
     "vitest": "^1.5.0"

@@ -1,8 +1,11 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
 
-// Vite dev server on :5173 (the origin the backend CORS allows).
+// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  server: { port: 5173 },
-});
+  server: {
+    port: 5173,
+    strictPort: true,
+  },
+})

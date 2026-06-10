@@ -1,0 +1,53 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      // Run this one (Terminal → Run Task… → "🚀 Start Community Compass",
+      // or it's the default build task: Cmd/Ctrl+Shift+B).
+      // Starts API + Java + Web together, then opens the app in the Simple Browser.
+      "label": "🚀 Start Community Compass",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "Community Compass: servers",
+        "Community Compass: open in browser"
+      ],
+      "group": { "kind": "build", "isDefault": true },
+      "problemMatcher": []
+    },
+    {
+      // `npm start` runs api+java+web concurrently (seeds the DB first).
+      // Marked as a background task so the sequence waits until Vite is ready.
+      "label": "Community Compass: servers",
+      "type": "shell",
+      "command": "npm start",
+      "isBackground": true,
+      "presentation": { "reveal": "always", "panel": "dedicated", "clear": true },
+      "problemMatcher": {
+        "owner": "community-compass",
+        "pattern": { "regexp": "^\\bNEVER_MATCH\\b$" },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "\\[(api|java|web)\\]",
+          "endsPattern": "ready in \\d+\\s*ms|Local:\\s+http"
+        }
+      }
+    },
+    {
+      // Opens http://localhost:5173 in VS Code's built-in Simple Browser.
+      "label": "Community Compass: open in browser",
+      "type": "shell",
+      "command": "echo",
+      "args": ["${input:openApp}"],
+      "presentation": { "reveal": "silent" },
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "openApp",
+      "type": "command",
+      "command": "simpleBrowser.show",
+      "args": "http://localhost:5173"
+    }
+  ]
+}

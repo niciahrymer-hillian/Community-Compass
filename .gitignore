@@ -21,8 +21,9 @@ __pycache__/
 *.db
 *.sqlite3
 
-# editor
-.vscode/
+# editor — ignore .vscode except the shared start task
+.vscode/*
+!.vscode/tasks.json
 
 # frontend build output
 dist/
