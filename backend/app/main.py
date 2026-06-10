@@ -11,7 +11,16 @@ from fastapi.exceptions import RequestValidationError # raised when request bodi
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
+from app.api.routes.assistant import router as assistant_router
+from app.api.routes.auth import router as auth_router
+from app.api.routes.caseworker import router as caseworker_router
 from app.api.routes.health import router as health_router
+from app.api.routes.housing import router as housing_router
+from app.api.routes.intake import router as intake_router
+from app.api.routes.news import router as news_router
+from app.api.routes.recommendations import router as recommendations_router
+from app.api.routes.resources import router as resources_router
+from app.api.routes.risk import router as risk_router
 from app.api.routes.users import router as users_router
 from app.core.config import settings
 from app.core.database import Base, init_db
@@ -49,4 +58,13 @@ async def validation_error_handler(request: Request, exc: RequestValidationError
 
 
 app.include_router(health_router)   # GET /health
+app.include_router(auth_router)     # /auth/dev-login (dev only)
 app.include_router(users_router)    # /users/register, /users/me
+app.include_router(intake_router)   # /intake (CC-30)
+app.include_router(resources_router)  # /resources (CC-31)
+app.include_router(housing_router)    # /housing (CC-32 + CC-10 matching)
+app.include_router(recommendations_router)  # /recommendations (CC-33 + CC-13)
+app.include_router(assistant_router)  # /assistant (CC-05 + CC-06)
+app.include_router(risk_router)       # /risk (Future-Path engine)
+app.include_router(news_router)       # /news (FirstStep items + HomeMatch HUD/DSHA)
+app.include_router(caseworker_router)  # /caseworker (CC-23 dashboard + CC-24 profile)

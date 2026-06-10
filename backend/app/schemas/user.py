@@ -18,7 +18,7 @@ class UserCreate(BaseModel):
     email: EmailStr
     full_name: Optional[str] = None
     # Literal = the request is rejected (422) if role isn't one of these exact values.
-    role: Literal["client", "caseworker", "admin", "developer"] = "client"
+    role: Literal["client", "caseworker", "navigator", "volunteer", "admin", "developer"] = "client"
 
 
 class UserUpdate(BaseModel):

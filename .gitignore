@@ -23,3 +23,11 @@ __pycache__/
 
 # editor
 .vscode/
+
+# frontend build output
+dist/
+**/dist/
+
+# java / maven build output
+target/
+**/target/
