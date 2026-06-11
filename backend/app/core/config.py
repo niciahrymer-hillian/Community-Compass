@@ -43,6 +43,17 @@ class Settings(BaseSettings):
     # project. MUST be set to false in production (Supabase issues real tokens).
     DEV_LOGIN_ENABLED: bool = True
 
+    @property
+    def hs256_secret(self) -> str:
+        """Key for signing/verifying HS256 tokens (dev-login + Supabase legacy).
+
+        Falls back to a dev value when SUPABASE_JWT_SECRET is unset, because
+        PyJWT refuses to sign HS256 with an empty key — so local sign-in works
+        with zero config. In production SUPABASE_JWT_SECRET is the real secret.
+        """
+        # 32+ bytes to satisfy HS256's recommended key length.
+        return self.SUPABASE_JWT_SECRET or "community-compass-dev-secret-change-me"
+
 
 # Module-level singleton — constructed once at import, imported everywhere.
 # Never call Settings() again elsewhere; share this instance so config is uniform.

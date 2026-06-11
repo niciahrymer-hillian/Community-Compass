@@ -39,10 +39,10 @@ def _jwks() -> PyJWKClient:
 def _decode_token(token: str) -> dict:
     # Read the header WITHOUT verifying, just to learn which algorithm signed it.
     alg = jwt.get_unverified_header(token).get("alg", "")
-    if alg == "HS256":                                # shared-secret path (tests + legacy)
+    if alg == "HS256":                                # shared-secret path (tests + legacy + dev-login)
         return jwt.decode(
             token,
-            settings.SUPABASE_JWT_SECRET,             # the symmetric secret
+            settings.hs256_secret,                    # symmetric secret (dev fallback if unset)
             algorithms=["HS256"],                     # pin the algorithm (never trust the header's)
             options={"verify_aud": False},            # Supabase sets aud="authenticated"; we don't check it
         )
