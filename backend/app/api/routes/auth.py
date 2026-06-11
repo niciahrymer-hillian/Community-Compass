@@ -45,13 +45,18 @@ async def dev_login(body: DevLoginRequest, db: AsyncSession = Depends(get_db)):
     if not user:
         user = User(id=uuid.uuid4(), email=body.email, full_name=body.full_name, role=body.role)
         db.add(user)
-        await db.commit()
-        await db.refresh(user)
+    else:
+        # Dev convenience: re-login switches role (so the role picker works) / updates name.
+        user.role = body.role
+        if body.full_name:
+            user.full_name = body.full_name
+    await db.commit()
+    await db.refresh(user)
 
     # Mint an HS256 token the backend will accept (same secret it verifies with).
     token = jwt.encode(
         {"sub": str(user.id), "exp": int(time.time()) + 60 * 60 * 8},
-        settings.SUPABASE_JWT_SECRET,
+        settings.hs256_secret,
         algorithm="HS256",
     )
     return DevLoginResponse(access_token=token, user=UserResponse.model_validate(user))
